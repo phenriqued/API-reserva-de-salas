@@ -27,11 +27,11 @@ public class UsuarioService {
         return usuarioRepository.save(novoUsuario);
     }
 
-    public DadosUsuario pegarUsuarioPeloId(Long id) {
+    public DadosUsuario listarUsuarioPeloId(Long id) {
         return usuarioRepository.findById(id).map(DadosUsuario::new).orElseThrow(EntityNotFoundException::new);
     }
 
-    public List<DadosUsuario> buscarTodosUsuarios() {
+    public List<DadosUsuario> listarTodosUsuarios() {
         return usuarioRepository.findAll().stream().map(DadosUsuario::new).toList();
     }
 

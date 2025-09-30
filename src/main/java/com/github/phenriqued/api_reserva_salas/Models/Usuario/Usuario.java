@@ -58,5 +58,4 @@ public class Usuario {
             setter.accept(value);
     }
 
-
 }

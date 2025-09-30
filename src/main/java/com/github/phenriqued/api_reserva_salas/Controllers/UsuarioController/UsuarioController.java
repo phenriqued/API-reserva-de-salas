@@ -28,14 +28,14 @@ public class UsuarioController {
         return ResponseEntity.created(uri).body(new DadosUsuario(usuarioCriado.getNome(), usuarioCriado.getEmail()));
     }
 
-    @GetMapping
-    public ResponseEntity<List<DadosUsuario>> buscarTodosUsuarios(){
-        return ResponseEntity.ok(usuarioService.buscarTodosUsuarios());
+    @GetMapping("/listar")
+    public ResponseEntity<List<DadosUsuario>> listarTodosUsuarios(){
+        return ResponseEntity.ok(usuarioService.listarTodosUsuarios());
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<DadosUsuario> pegarUsuarioPeloID(@PathVariable("id") Long id){
-        return ResponseEntity.ok(usuarioService.pegarUsuarioPeloId(id));
+    @GetMapping("/listar/{id}")
+    public ResponseEntity<DadosUsuario> listarUsuarioPeloID(@PathVariable("id") Long id){
+        return ResponseEntity.ok(usuarioService.listarUsuarioPeloId(id));
     }
 
     @PatchMapping("{id}")
