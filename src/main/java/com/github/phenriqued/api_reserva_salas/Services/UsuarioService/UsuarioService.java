@@ -27,12 +27,14 @@ public class UsuarioService {
         return usuarioRepository.save(novoUsuario);
     }
 
+    public List<DadosUsuario> listarTodosUsuarios() {
+        return usuarioRepository.findAll().stream().map(DadosUsuario::new).toList();
+    }
     public DadosUsuario listarUsuarioPeloId(Long id) {
         return usuarioRepository.findById(id).map(DadosUsuario::new).orElseThrow(EntityNotFoundException::new);
     }
-
-    public List<DadosUsuario> listarTodosUsuarios() {
-        return usuarioRepository.findAll().stream().map(DadosUsuario::new).toList();
+    public Usuario findById(Long id) {
+        return usuarioRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public void atualizarUsuario(Long id, AtualizarDadosUsuario atualizarDados) {

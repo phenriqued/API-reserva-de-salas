@@ -34,6 +34,9 @@ public class SalaService {
     public DadosSala listarSalaPorId(Long id) {
         return salaRepository.findById(id).map(DadosSala::new).orElseThrow(() -> new EntityNotFoundException("Sala não encontrada"));
     }
+    public Sala findById(Long id) {
+        return salaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Sala não encontrada"));
+    }
 
     public void atualizarDadosSala(Long id, AtualizarDadosSala dadosSala){
         if(Objects.isNull(dadosSala)){

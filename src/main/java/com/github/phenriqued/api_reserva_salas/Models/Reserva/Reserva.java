@@ -1,5 +1,7 @@
 package com.github.phenriqued.api_reserva_salas.Models.Reserva;
 
+import com.github.phenriqued.api_reserva_salas.Controllers.ReservaController.DadosAtualizarReserva;
+import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.CriarDadosReserva;
 import com.github.phenriqued.api_reserva_salas.Models.Sala.Sala;
 import com.github.phenriqued.api_reserva_salas.Models.Usuario.Usuario;
 import jakarta.persistence.*;
@@ -9,6 +11,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 @Entity
 @Table(name = "tb_reservas")
@@ -46,6 +50,42 @@ public class Reserva {
     @Column(nullable = false)
     private StatusReserva statusReserva;
 
+    public Reserva(Usuario usuario, Sala sala, CriarDadosReserva dadosReserva){
+        this.usuario = usuario;
+        this.sala = sala;
+        this.inicioReserva = dadosReserva.inicioReserva();
+        this.fimReserva = dadosReserva.fimReserva();
+        this.statusReserva = StatusReserva.ATIVA;
+    }
+
+    public void atualizarReserva(Sala sala, Usuario usuario, DadosAtualizarReserva dadosReserva){
+        setSala(sala);
+        setUsuario(usuario);
+        setInicioReserva(dadosReserva.inicioReserva());
+        setFimReserva(dadosReserva.fimReserva());
+        setStatusReserva(dadosReserva.statusReserva());
+    }
+
+    public void setSala(Sala sala){
+        if(Objects.nonNull(sala))
+            this.sala = sala;
+    }
+    public void setUsuario(Usuario usuario){
+        if (Objects.nonNull(usuario))
+            this.usuario = usuario;
+    }
+    public void setInicioReserva(LocalDateTime inicioReserva){
+        if (Objects.nonNull(inicioReserva))
+            this.inicioReserva = inicioReserva;
+    }
+    public void setFimReserva(LocalDateTime fimReserva){
+        if (Objects.nonNull(fimReserva))
+            this.fimReserva = fimReserva;
+    }
+    public void setStatusReserva(String status){
+        if (Objects.nonNull(status) && !status.trim().isEmpty())
+            this.statusReserva = StatusReserva.valueOf(status);
+    }
 
 
 }
