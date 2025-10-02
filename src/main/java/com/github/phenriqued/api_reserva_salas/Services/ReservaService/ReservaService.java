@@ -1,12 +1,10 @@
 package com.github.phenriqued.api_reserva_salas.Services.ReservaService;
 
-import com.github.phenriqued.api_reserva_salas.Controllers.ReservaController.DadosAtualizarReserva;
+import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadosAtualizarReserva;
 import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.CriarDadosReserva;
 import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadoSalaReservaId;
 import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadoUsuarioReservaId;
 import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadosReserva;
-import com.github.phenriqued.api_reserva_salas.DTOs.SalaDTO.DadosSala;
-import com.github.phenriqued.api_reserva_salas.DTOs.UsuarioDTO.DadosUsuario;
 import com.github.phenriqued.api_reserva_salas.Models.Reserva.Reserva;
 import com.github.phenriqued.api_reserva_salas.Models.Sala.Sala;
 import com.github.phenriqued.api_reserva_salas.Models.Usuario.Usuario;
@@ -15,14 +13,11 @@ import com.github.phenriqued.api_reserva_salas.Services.SalaService.SalaService;
 import com.github.phenriqued.api_reserva_salas.Services.UsuarioService.UsuarioService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 

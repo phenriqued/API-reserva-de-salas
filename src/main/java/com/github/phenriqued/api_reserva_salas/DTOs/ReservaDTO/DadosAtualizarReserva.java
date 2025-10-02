@@ -1,4 +1,4 @@
-package com.github.phenriqued.api_reserva_salas.Controllers.ReservaController;
+package com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO;
 
 import java.time.LocalDateTime;
 

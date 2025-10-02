@@ -1,6 +1,6 @@
 package com.github.phenriqued.api_reserva_salas.Models.Reserva;
 
-import com.github.phenriqued.api_reserva_salas.Controllers.ReservaController.DadosAtualizarReserva;
+import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadosAtualizarReserva;
 import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.CriarDadosReserva;
 import com.github.phenriqued.api_reserva_salas.Models.Sala.Sala;
 import com.github.phenriqued.api_reserva_salas.Models.Usuario.Usuario;
@@ -10,9 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 @Entity
 @Table(name = "tb_reservas")

@@ -1,9 +1,6 @@
 package com.github.phenriqued.api_reserva_salas.Controllers.ReservaController;
 
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.CriarDadosReserva;
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadoSalaReservaId;
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadoUsuarioReservaId;
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadosReserva;
+import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.*;
 import com.github.phenriqued.api_reserva_salas.Services.ReservaService.ReservaService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
