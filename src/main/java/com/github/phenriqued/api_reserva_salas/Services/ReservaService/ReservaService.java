@@ -1,10 +1,7 @@
 package com.github.phenriqued.api_reserva_salas.Services.ReservaService;
 
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadosAtualizarReserva;
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.CriarDadosReserva;
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadoSalaReservaId;
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadoUsuarioReservaId;
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadosReserva;
+import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.*;
+import com.github.phenriqued.api_reserva_salas.Infra.Exceptions.BusinessRuleException.BusinessRuleException;
 import com.github.phenriqued.api_reserva_salas.Models.Reserva.Reserva;
 import com.github.phenriqued.api_reserva_salas.Models.Sala.Sala;
 import com.github.phenriqued.api_reserva_salas.Models.Usuario.Usuario;
@@ -73,15 +70,15 @@ public class ReservaService {
 
     private void validarPeriodoReserva(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
         if (inicio == null || fim == null) {
-            throw new IllegalArgumentException("Tanto data de inicio quanto data do fim da reserva devem ser diferente de null");
+            throw new BusinessRuleException("Tanto data de inicio quanto data do fim da reserva devem ser diferente de null");
         }else if(sala == null){
-            throw new NullPointerException("Sala não pode ser null");
+            throw new BusinessRuleException("Sala não pode ser null");
         }else if(reservaRepository.existsReservaConflitante(sala.getId(), inicio, fim)){
-            throw new IllegalArgumentException("Já existe uma reserva entre o periodo marcado!");
+            throw new BusinessRuleException("Já existe uma reserva entre o periodo marcado!");
         }else if(fim.isBefore(LocalDateTime.now()) || inicio.isBefore(LocalDateTime.now())){
-            throw new IllegalArgumentException("O periodo não pode anteceder a data atual");
+            throw new BusinessRuleException("O periodo não pode anteceder a data atual");
         }else if(fim.isBefore(inicio)){
-            throw new IllegalArgumentException("O periodo inicial deve anteceder o fim");
+            throw new BusinessRuleException("O periodo inicial deve anteceder o fim");
         }
     }
 

@@ -1,7 +1,7 @@
 package com.github.phenriqued.api_reserva_salas.Models.Reserva;
 
-import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadosAtualizarReserva;
 import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.CriarDadosReserva;
+import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.DadosAtualizarReserva;
 import com.github.phenriqued.api_reserva_salas.Models.Sala.Sala;
 import com.github.phenriqued.api_reserva_salas.Models.Usuario.Usuario;
 import jakarta.persistence.*;
