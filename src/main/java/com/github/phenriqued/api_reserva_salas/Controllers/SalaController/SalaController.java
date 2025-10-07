@@ -6,6 +6,8 @@ import com.github.phenriqued.api_reserva_salas.DTOs.SalaDTO.DadosSala;
 import com.github.phenriqued.api_reserva_salas.Services.SalaService.SalaService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -29,8 +31,8 @@ public class SalaController {
     }
 
     @GetMapping("listar")
-    public ResponseEntity<List<DadosSala>> listarTodasSalas(){
-        return ResponseEntity.ok(salaService.listarTodasSalas());
+    public ResponseEntity<List<DadosSala>> listarTodasSalas(@PageableDefault(size = 5) Pageable pageable){
+        return ResponseEntity.ok(salaService.listarTodasSalas(pageable));
     }
     @GetMapping("listar/{id}")
     public ResponseEntity<DadosSala> listarSalaPorId(@PathVariable(value = "id") Long id){

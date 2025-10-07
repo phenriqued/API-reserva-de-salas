@@ -1,13 +1,13 @@
 package com.github.phenriqued.api_reserva_salas.Repositories.ReservaRepository;
 
 import com.github.phenriqued.api_reserva_salas.Models.Reserva.Reserva;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
@@ -24,7 +24,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
                                      @Param("inicioReserva") LocalDateTime inicioReserva,
                                      @Param("fimReserva") LocalDateTime fimReserva);
 
-    List<Reserva> findAllBySalaId(Long salaId);
+    Page<Reserva> findAllBySalaId(Long salaId, Pageable pageable);
 
-    List<Reserva> findAllByUsuarioId(Long usuarioId);
+    Page<Reserva> findAllByUsuarioId(Long usuarioId, Pageable pageable);
 }

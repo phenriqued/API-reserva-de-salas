@@ -9,9 +9,11 @@ import com.github.phenriqued.api_reserva_salas.Repositories.ReservaRepository.Re
 import com.github.phenriqued.api_reserva_salas.Services.SalaService.SalaService;
 import com.github.phenriqued.api_reserva_salas.Services.UsuarioService.UsuarioService;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +27,7 @@ public class ReservaService {
     private final UsuarioService usuarioService;
     private final SalaService salaService;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public DadosReserva criarReserva(CriarDadosReserva dadosReserva) {
         var usuario = usuarioService.findById(dadosReserva.usuarioId());
         var sala = salaService.findById(dadosReserva.salaId());
@@ -33,18 +35,20 @@ public class ReservaService {
         var reserva = reservaRepository.save(new Reserva(usuario, sala, dadosReserva));
         return new DadosReserva(reserva);
     }
-
+    @Transactional(readOnly = true)
     public DadosReserva listarPorId(Long id) {
         var reserva = reservaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reserva não encontrada"));
         return new DadosReserva(reserva);
     }
-    public List<DadosReserva> listarTodasReservaPorSala(DadoSalaReservaId salaId) {
-        return reservaRepository.findAllBySalaId(salaId.salaId()).stream().map(DadosReserva::new).toList();
+    @Transactional(readOnly = true)
+    public List<DadosReserva> listarTodasReservaPorSala(DadoSalaReservaId salaId, Pageable pageable) {
+        return reservaRepository.findAllBySalaId(salaId.salaId(), pageable).stream().map(DadosReserva::new).toList();
     }
-    public List<DadosReserva> listarTodasReservaPorUsuario(DadoUsuarioReservaId usuarioId) {
-        return reservaRepository.findAllByUsuarioId(usuarioId.usuarioId()).stream().map(DadosReserva::new).toList();
+    @Transactional(readOnly = true)
+    public List<DadosReserva> listarTodasReservaPorUsuario(DadoUsuarioReservaId usuarioId, Pageable pageable) {
+        return reservaRepository.findAllByUsuarioId(usuarioId.usuarioId(), pageable).stream().map(DadosReserva::new).toList();
     }
-
+    @Transactional(rollbackFor = Exception.class)
     public void atualizarReserva(Long reservaId, DadosAtualizarReserva dadosAtualizarReserva){
         var reserva = reservaRepository.findById(reservaId).orElseThrow(() -> new EntityNotFoundException("Reserva não encontrada"));
 
@@ -62,10 +66,9 @@ public class ReservaService {
         reserva.atualizarReserva(sala, usuario, dadosAtualizarReserva);
         reservaRepository.save(reserva);
     }
-
+    @Transactional(rollbackFor = Exception.class)
     public void deleteReserva(Long id) {
-        var reservaDelete = reservaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reserva não encontrada"));
-        reservaRepository.deleteById(reservaDelete.getId());
+        reservaRepository.deleteById(id);
     }
 
     private void validarPeriodoReserva(Sala sala, LocalDateTime inicio, LocalDateTime fim) {

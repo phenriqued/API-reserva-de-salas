@@ -6,10 +6,11 @@ import com.github.phenriqued.api_reserva_salas.DTOs.UsuarioDTO.DadosUsuario;
 import com.github.phenriqued.api_reserva_salas.Models.Usuario.Usuario;
 import com.github.phenriqued.api_reserva_salas.Repositories.UsuarioRepository.UsuarioRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -21,22 +22,24 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public Usuario criarUsuario(@Valid CriarDadosUsuario criarDadosUsuario) {
         Usuario novoUsuario = new Usuario(criarDadosUsuario);
         return usuarioRepository.save(novoUsuario);
     }
-
-    public List<DadosUsuario> listarTodosUsuarios() {
-        return usuarioRepository.findAll().stream().map(DadosUsuario::new).toList();
+    @Transactional(readOnly = true)
+    public List<DadosUsuario> listarTodosUsuarios(Pageable pageable) {
+        return usuarioRepository.findAll(pageable).stream().map(DadosUsuario::new).toList();
     }
+    @Transactional(readOnly = true)
     public DadosUsuario listarUsuarioPeloId(Long id) {
         return usuarioRepository.findById(id).map(DadosUsuario::new).orElseThrow(EntityNotFoundException::new);
     }
+    @Transactional(readOnly = true)
     public Usuario findById(Long id) {
         return usuarioRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
-
+    @Transactional(rollbackFor = Exception.class)
     public void atualizarUsuario(Long id, AtualizarDadosUsuario atualizarDados) {
         if (Objects.isNull(atualizarDados)){
             return;
@@ -45,10 +48,9 @@ public class UsuarioService {
         usuario.atualizarDados(atualizarDados);
         usuarioRepository.save(usuario);
     }
-
+    @Transactional(rollbackFor = Exception.class)
     public void deletarUsuario(Long id){
-        var usuario = usuarioRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        usuarioRepository.deleteById(usuario.getId());
+        usuarioRepository.deleteById(id);
     }
 
 }

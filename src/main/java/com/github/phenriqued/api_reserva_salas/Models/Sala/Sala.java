@@ -49,7 +49,7 @@ public class Sala {
     @Column(nullable = false)
     private Boolean disponivelParaReserva;
 
-    @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "sala", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Reserva> listSalaReservada;
 
     public Sala(CriarDadosSala dadosSala){

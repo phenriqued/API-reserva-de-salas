@@ -39,7 +39,7 @@ public class Usuario {
     @Setter
     private String password;
 
-    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Reserva> listReservas;
 
     public Usuario(CriarDadosUsuario dadosUsuario){

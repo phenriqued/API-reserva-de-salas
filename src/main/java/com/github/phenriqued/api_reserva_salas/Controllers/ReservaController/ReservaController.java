@@ -4,6 +4,8 @@ import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.*;
 import com.github.phenriqued.api_reserva_salas.Services.ReservaService.ReservaService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -31,12 +33,12 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.listarPorId(id));
     }
     @GetMapping("/listar/sala")
-    public ResponseEntity<List<DadosReserva>> listarTodasReservaPorSala(@RequestBody DadoSalaReservaId salaId){
-        return ResponseEntity.ok(reservaService.listarTodasReservaPorSala(salaId));
+    public ResponseEntity<List<DadosReserva>> listarTodasReservaPorSala(@RequestBody DadoSalaReservaId salaId, @PageableDefault(size = 5) Pageable pageable){
+        return ResponseEntity.ok(reservaService.listarTodasReservaPorSala(salaId, pageable));
     }
     @GetMapping("/listar/usuario")
-    public ResponseEntity<List<DadosReserva>> listarTodasReservaPorUsuario(@RequestBody DadoUsuarioReservaId usuarioId){
-        return ResponseEntity.ok(reservaService.listarTodasReservaPorUsuario(usuarioId));
+    public ResponseEntity<List<DadosReserva>> listarTodasReservaPorUsuario(@RequestBody DadoUsuarioReservaId usuarioId, @PageableDefault(size = 5) Pageable pageable){
+        return ResponseEntity.ok(reservaService.listarTodasReservaPorUsuario(usuarioId, pageable));
     }
 
     @PatchMapping("/{id}")

@@ -6,6 +6,8 @@ import com.github.phenriqued.api_reserva_salas.DTOs.UsuarioDTO.DadosUsuario;
 import com.github.phenriqued.api_reserva_salas.Services.UsuarioService.UsuarioService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -29,8 +31,8 @@ public class UsuarioController {
     }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<DadosUsuario>> listarTodosUsuarios(){
-        return ResponseEntity.ok(usuarioService.listarTodosUsuarios());
+    public ResponseEntity<List<DadosUsuario>> listarTodosUsuarios(@PageableDefault(size = 5, sort = "nome")Pageable pageable){
+        return ResponseEntity.ok(usuarioService.listarTodosUsuarios(pageable));
     }
 
     @GetMapping("/listar/{id}")
