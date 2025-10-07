@@ -1,6 +1,7 @@
 package com.github.phenriqued.api_reserva_salas.Repositories.ReservaRepository;
 
 import com.github.phenriqued.api_reserva_salas.Models.Reserva.Reserva;
+import com.github.phenriqued.api_reserva_salas.Models.Reserva.StatusReserva;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,6 +26,8 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
                                      @Param("fimReserva") LocalDateTime fimReserva);
 
     Page<Reserva> findAllBySalaId(Long salaId, Pageable pageable);
+    Page<Reserva> findAllBySalaIdAndStatusReserva(Long salaId, StatusReserva statusReserva, Pageable pageable);
 
     Page<Reserva> findAllByUsuarioId(Long usuarioId, Pageable pageable);
+    Page<Reserva> findAllByUsuarioIdAndStatusReserva(Long usuarioId, StatusReserva statusReserva, Pageable pageable);
 }

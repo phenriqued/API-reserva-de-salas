@@ -28,6 +28,17 @@ public class ReservaController {
         return ResponseEntity.created(uri).body(reservaCriada);
     }
 
+    @PatchMapping("/cancelar/{id}")
+    public ResponseEntity<Void> cancelarReserva(@PathVariable(value = "id")  Long id){
+        reservaService.cancelarReserva(id);
+        return ResponseEntity.noContent().build();
+    }
+    @PatchMapping("/reativar/{id}")
+    public ResponseEntity<Void> ativarReserva(@PathVariable(value = "id")  Long id){
+        reservaService.reativarReserva(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/listar/{id}")
     public ResponseEntity<DadosReserva> listarReservaPorId(@PathVariable(value = "id")  Long id){
         return ResponseEntity.ok(reservaService.listarPorId(id));

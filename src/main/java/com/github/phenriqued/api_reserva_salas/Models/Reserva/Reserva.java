@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -44,6 +45,7 @@ public class Reserva {
     private LocalDateTime fimReserva;
 
     // status da reserva
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private StatusReserva statusReserva;
@@ -61,7 +63,7 @@ public class Reserva {
         setUsuario(usuario);
         setInicioReserva(dadosReserva.inicioReserva());
         setFimReserva(dadosReserva.fimReserva());
-        setStatusReserva(dadosReserva.statusReserva());
+        setStatusReservaString(dadosReserva.statusReserva());
     }
 
     public void setSala(Sala sala){
@@ -80,7 +82,7 @@ public class Reserva {
         if (Objects.nonNull(fimReserva))
             this.fimReserva = fimReserva;
     }
-    public void setStatusReserva(String status){
+    public void setStatusReservaString(String status){
         if (Objects.nonNull(status) && !status.trim().isEmpty())
             this.statusReserva = StatusReserva.valueOf(status);
     }

@@ -3,6 +3,7 @@ package com.github.phenriqued.api_reserva_salas.Services.ReservaService;
 import com.github.phenriqued.api_reserva_salas.DTOs.ReservaDTO.*;
 import com.github.phenriqued.api_reserva_salas.Infra.Exceptions.BusinessRuleException.BusinessRuleException;
 import com.github.phenriqued.api_reserva_salas.Models.Reserva.Reserva;
+import com.github.phenriqued.api_reserva_salas.Models.Reserva.StatusReserva;
 import com.github.phenriqued.api_reserva_salas.Models.Sala.Sala;
 import com.github.phenriqued.api_reserva_salas.Models.Usuario.Usuario;
 import com.github.phenriqued.api_reserva_salas.Repositories.ReservaRepository.ReservaRepository;
@@ -12,7 +13,6 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -35,19 +35,42 @@ public class ReservaService {
         var reserva = reservaRepository.save(new Reserva(usuario, sala, dadosReserva));
         return new DadosReserva(reserva);
     }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void cancelarReserva(Long id) {
+        var reserva = findById(id);
+        if(reserva.getStatusReserva() != StatusReserva.ATIVA){
+            throw new BusinessRuleException("Não é possível cancelar uma reserva que não esteja ativa");
+        }
+        reserva.setStatusReserva(StatusReserva.CANCELADA);
+        reservaRepository.flush();
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void reativarReserva(Long id) {
+        var reserva = findById(id);
+        if(reserva.getStatusReserva() != StatusReserva.CANCELADA){
+            throw new BusinessRuleException("Não é possível ativar uma reservar que foi concluida ou está ativa");
+        }
+        validarPeriodoReserva(reserva.getSala(), reserva.getInicioReserva(), reserva.getFimReserva());
+        reserva.setStatusReserva(StatusReserva.ATIVA);
+        reservaRepository.flush();
+    }
+
     @Transactional(readOnly = true)
     public DadosReserva listarPorId(Long id) {
-        var reserva = reservaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reserva não encontrada"));
+        var reserva = findById(id);
         return new DadosReserva(reserva);
     }
     @Transactional(readOnly = true)
     public List<DadosReserva> listarTodasReservaPorSala(DadoSalaReservaId salaId, Pageable pageable) {
-        return reservaRepository.findAllBySalaId(salaId.salaId(), pageable).stream().map(DadosReserva::new).toList();
+        return reservaRepository.findAllBySalaIdAndStatusReserva(salaId.salaId(), StatusReserva.ATIVA, pageable).stream().map(DadosReserva::new).toList();
     }
     @Transactional(readOnly = true)
     public List<DadosReserva> listarTodasReservaPorUsuario(DadoUsuarioReservaId usuarioId, Pageable pageable) {
-        return reservaRepository.findAllByUsuarioId(usuarioId.usuarioId(), pageable).stream().map(DadosReserva::new).toList();
+        return reservaRepository.findAllByUsuarioIdAndStatusReserva(usuarioId.usuarioId(), StatusReserva.ATIVA, pageable).stream().map(DadosReserva::new).toList();
     }
+
     @Transactional(rollbackFor = Exception.class)
     public void atualizarReserva(Long reservaId, DadosAtualizarReserva dadosAtualizarReserva){
         var reserva = reservaRepository.findById(reservaId).orElseThrow(() -> new EntityNotFoundException("Reserva não encontrada"));
@@ -66,6 +89,7 @@ public class ReservaService {
         reserva.atualizarReserva(sala, usuario, dadosAtualizarReserva);
         reservaRepository.save(reserva);
     }
+
     @Transactional(rollbackFor = Exception.class)
     public void deleteReserva(Long id) {
         reservaRepository.deleteById(id);
@@ -84,5 +108,7 @@ public class ReservaService {
             throw new BusinessRuleException("O periodo inicial deve anteceder o fim");
         }
     }
-
+    private Reserva findById(Long id){
+        return reservaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reserva não encontrada"));
+    }
 }
