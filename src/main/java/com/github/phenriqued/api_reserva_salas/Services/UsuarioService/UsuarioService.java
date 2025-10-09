@@ -37,7 +37,7 @@ public class UsuarioService {
     }
     @Transactional(readOnly = true)
     public Usuario findById(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado, verifique o ID!"));
     }
     @Transactional(rollbackFor = Exception.class)
     public void atualizarUsuario(Long id, AtualizarDadosUsuario atualizarDados) {

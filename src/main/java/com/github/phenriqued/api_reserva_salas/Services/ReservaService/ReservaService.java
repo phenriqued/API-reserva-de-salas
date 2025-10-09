@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 
@@ -77,15 +78,13 @@ public class ReservaService {
 
         Sala sala = dadosAtualizarReserva.salaId() != null
                 ? salaService.findById(dadosAtualizarReserva.salaId())
-                : null;
+                : reserva.getSala();
 
         Usuario usuario = dadosAtualizarReserva.usuarioId() != null
                 ? usuarioService.findById(dadosAtualizarReserva.usuarioId())
                 : null;
 
-        if(dadosAtualizarReserva.inicioReserva() != null || dadosAtualizarReserva.fimReserva() != null){
-            validarPeriodoReserva(sala, dadosAtualizarReserva.inicioReserva(), dadosAtualizarReserva.fimReserva());
-        }
+        validarPeriodoAtualizacao(dadosAtualizarReserva, sala, reserva);
         reserva.atualizarReserva(sala, usuario, dadosAtualizarReserva);
         reservaRepository.save(reserva);
     }
@@ -95,11 +94,21 @@ public class ReservaService {
         reservaRepository.deleteById(id);
     }
 
+
+    private void validarPeriodoAtualizacao(DadosAtualizarReserva dados, Sala sala, Reserva reserva){
+        boolean attSala = dados.salaId() != null;
+        boolean attPeriodo = dados.inicioReserva() != null || dados.fimReserva() != null;
+
+        if(attSala || attPeriodo){
+            LocalDateTime inicio = Optional.ofNullable(dados.inicioReserva()).orElse(reserva.getInicioReserva());
+            LocalDateTime fim = Optional.ofNullable(dados.fimReserva()).orElse(reserva.getFimReserva());
+
+            validarPeriodoReserva(sala, inicio, fim);
+        }
+    }
     private void validarPeriodoReserva(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
         if (inicio == null || fim == null) {
             throw new BusinessRuleException("Tanto data de inicio quanto data do fim da reserva devem ser diferente de null");
-        }else if(sala == null){
-            throw new BusinessRuleException("Sala não pode ser null");
         }else if(reservaRepository.existsReservaConflitante(sala.getId(), inicio, fim)){
             throw new BusinessRuleException("Já existe uma reserva entre o periodo marcado!");
         }else if(fim.isBefore(LocalDateTime.now()) || inicio.isBefore(LocalDateTime.now())){
