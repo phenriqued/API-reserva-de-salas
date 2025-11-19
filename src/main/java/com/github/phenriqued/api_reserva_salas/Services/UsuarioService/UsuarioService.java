@@ -9,6 +9,9 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,11 +25,6 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
 
-    @Transactional(rollbackFor = Exception.class)
-    public Usuario criarUsuario(@Valid CriarDadosUsuario criarDadosUsuario) {
-        Usuario novoUsuario = new Usuario(criarDadosUsuario);
-        return usuarioRepository.save(novoUsuario);
-    }
     @Transactional(readOnly = true)
     public List<DadosUsuario> listarTodosUsuarios(Pageable pageable) {
         return usuarioRepository.findAll(pageable).stream().map(DadosUsuario::new).toList();

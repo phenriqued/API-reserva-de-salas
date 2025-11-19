@@ -42,10 +42,10 @@ public class Usuario {
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Reserva> listReservas;
 
-    public Usuario(CriarDadosUsuario dadosUsuario){
-        this.nome = dadosUsuario.name();
-        this.email = dadosUsuario.email();
-        this.password = dadosUsuario.password();
+    public Usuario(String nome, String email, String password) {
+        this.nome = nome;
+        this.email = email;
+        this.password = password;
     }
 
     public void atualizarDados(AtualizarDadosUsuario atualizarDados) {

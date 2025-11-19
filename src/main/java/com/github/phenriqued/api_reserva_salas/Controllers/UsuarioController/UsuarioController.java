@@ -23,13 +23,6 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
 
-    @PostMapping
-    public ResponseEntity<DadosUsuario> criarUsuario(@RequestBody @Valid CriarDadosUsuario criarDadosUsuario, UriComponentsBuilder uriComponentsBuilder){
-        var usuarioCriado = usuarioService.criarUsuario(criarDadosUsuario);
-        URI uri = uriComponentsBuilder.path("/usuario/"+usuarioCriado.getId()).buildAndExpand().toUri();
-        return ResponseEntity.created(uri).body(new DadosUsuario(usuarioCriado.getNome(), usuarioCriado.getEmail()));
-    }
-
     @GetMapping("/listar")
     public ResponseEntity<List<DadosUsuario>> listarTodosUsuarios(@PageableDefault(size = 5, sort = "nome")Pageable pageable){
         return ResponseEntity.ok(usuarioService.listarTodosUsuarios(pageable));
