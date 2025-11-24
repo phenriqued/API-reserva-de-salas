@@ -10,6 +10,7 @@ import com.github.phenriqued.api_reserva_salas.Repositories.ReservaRepository.Re
 import com.github.phenriqued.api_reserva_salas.Services.SalaService.SalaService;
 import com.github.phenriqued.api_reserva_salas.Services.UsuarioService.UsuarioService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -84,7 +85,9 @@ public class ReservaService {
                 ? usuarioService.findById(dadosAtualizarReserva.usuarioId())
                 : null;
 
-        validarPeriodoAtualizacao(dadosAtualizarReserva, sala, reserva);
+        if(dadosAtualizarReserva.salaId() != null || dadosAtualizarReserva.inicioReserva() != null || dadosAtualizarReserva.fimReserva() != null){
+            validarPeriodoAtualizacao(dadosAtualizarReserva, sala, reserva);
+        }
         reserva.atualizarReserva(sala, usuario, dadosAtualizarReserva);
         reservaRepository.save(reserva);
     }
@@ -96,25 +99,17 @@ public class ReservaService {
 
 
     private void validarPeriodoAtualizacao(DadosAtualizarReserva dados, Sala sala, Reserva reserva){
-        boolean attSala = dados.salaId() != null;
-        boolean attPeriodo = dados.inicioReserva() != null || dados.fimReserva() != null;
-
-        if(attSala || attPeriodo){
-            LocalDateTime inicio = Optional.ofNullable(dados.inicioReserva()).orElse(reserva.getInicioReserva());
-            LocalDateTime fim = Optional.ofNullable(dados.fimReserva()).orElse(reserva.getFimReserva());
-
-            validarPeriodoReserva(sala, inicio, fim);
+        if (dados.salaId() != null && (dados.inicioReserva() == null || dados.fimReserva() == null)) {
+            throw new BusinessRuleException("Tanto data de inicio quanto data do fim da reserva devem ser diferente de null");
         }
+        LocalDateTime inicio = Optional.ofNullable(dados.inicioReserva()).orElse(reserva.getInicioReserva());
+        LocalDateTime fim = Optional.ofNullable(dados.fimReserva()).orElse(reserva.getFimReserva());
+
+        validarPeriodoReserva(sala, inicio, fim);
     }
     private void validarPeriodoReserva(Sala sala, LocalDateTime inicio, LocalDateTime fim) {
-        if (inicio == null || fim == null) {
-            throw new BusinessRuleException("Tanto data de inicio quanto data do fim da reserva devem ser diferente de null");
-        }else if(reservaRepository.existsReservaConflitante(sala.getId(), inicio, fim)){
+        if(reservaRepository.existsReservaConflitante(sala.getId(), inicio, fim)) {
             throw new BusinessRuleException("Já existe uma reserva entre o periodo marcado!");
-        }else if(fim.isBefore(LocalDateTime.now()) || inicio.isBefore(LocalDateTime.now())){
-            throw new BusinessRuleException("O periodo não pode anteceder a data atual");
-        }else if(fim.isBefore(inicio)){
-            throw new BusinessRuleException("O periodo inicial deve anteceder o fim");
         }
     }
     private Reserva findById(Long id){
