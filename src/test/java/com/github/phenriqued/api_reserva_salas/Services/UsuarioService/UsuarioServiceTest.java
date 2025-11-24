@@ -35,17 +35,6 @@ class UsuarioServiceTest {
     }
 
     @Test
-    @DisplayName("Deveria criar um usuário quando os dados estão corretos")
-    void deveriaCriarUsuarioQuandoDadosEstaoCorretos() {
-        CriarDadosUsuario dadosUsuario = new CriarDadosUsuario("UserTest", "teste@email.com", "123456");
-        Usuario usuario = new Usuario(dadosUsuario);
-
-        when(usuarioRepository.save(usuario)).thenReturn(usuario);
-
-        usuarioService.criarUsuario(dadosUsuario);
-        verify(usuarioRepository, times(1)).save(usuario);
-    }
-    @Test
     @DisplayName("não deveria criar um usuário quando os dados estão incorretos")
     void naoDeveriaCriarUsuarioQuandoDadosEstaoIncorretos() {
         CriarDadosUsuario dadosUsuarioInvalido = new CriarDadosUsuario("UserTest", "testeEmailInvalido.com", "123456");
@@ -59,7 +48,7 @@ class UsuarioServiceTest {
     @DisplayName("deveria atualizar um usuário quando os dados estão corretos")
     void atualizarUsuario() {
         CriarDadosUsuario dadosUsuario = new CriarDadosUsuario("UserTest", "teste@email.com", "123456");
-        Usuario usuario = new Usuario(dadosUsuario);
+        Usuario usuario = new Usuario("Teste", "Teste@email.com", "Teste123");
         ReflectionTestUtils.setField(usuario, "id", 1L);
 
         when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
@@ -83,7 +72,7 @@ class UsuarioServiceTest {
     @DisplayName("Deveria deletar uma usuario quando a mesmo existe e está correto")
     void deletarUsuario() {
         CriarDadosUsuario dadosUsuario = new CriarDadosUsuario("UserTest", "teste@email.com", "123456");
-        Usuario usuario = new Usuario(dadosUsuario);
+        Usuario usuario = new Usuario("Teste", "Teste@email.com", "Teste123");
         ReflectionTestUtils.setField(usuario, "id", 1L);
 
         usuarioService.deletarUsuario(1L);

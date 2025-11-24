@@ -39,7 +39,7 @@ class AtualizarReservaTest {
     @InjectMocks
     private ReservaService reservaService;
 
-    private Usuario usuarioTest = new Usuario(new CriarDadosUsuario("Teste", "teste@email.com", "123456"));
+    private Usuario usuarioTest = new Usuario("Teste", "Teste@email.com", "Teste123");
     private Sala salaTest = new Sala(new CriarDadosSala("Sala", 10, "Rua Teste", "Sala de teste"));
     CriarDadosReserva dadosReserva = new CriarDadosReserva(1L, 1L, LocalDateTime.now().plusMinutes(10), LocalDateTime.now().plusHours(2));
     Reserva reserva = new Reserva(usuarioTest, salaTest, dadosReserva);
@@ -79,7 +79,8 @@ class AtualizarReservaTest {
         Sala novaSala = new Sala(new CriarDadosSala("Nova Sala", 50, "Rua Teste", "Nova Sala de teste"));
         ReflectionTestUtils.setField(novaSala, "id", 2L);
 
-        DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(null, 2L, null, null, null);
+        DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(null, 2L,
+                reserva.getInicioReserva(), reserva.getFimReserva(), null);
 
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
         when(salaService.findById(2L)).thenReturn(novaSala);
@@ -96,7 +97,7 @@ class AtualizarReservaTest {
     void atualizarUsuarioReserva() {
         setarId();
 
-        Usuario novoUsuario = new Usuario(new CriarDadosUsuario("New User Test", "test@email.com", "123456"));
+        Usuario novoUsuario = new Usuario("New User Test", "test@email.com", "123456");
         ReflectionTestUtils.setField(novoUsuario, "id", 2L);
 
         DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(2L, null, null, null, null);
@@ -123,12 +124,13 @@ class AtualizarReservaTest {
     }
     @Test
     @DisplayName("Não deveria atualizar a Sala de uma reserva quando a mesma existe e sala já ocupada")
-    void napDeveriaAtualizarSalaReservaQuandoSalaEstaOcupada() {
+    void naoDeveriaAtualizarSalaReservaQuandoSalaEstaOcupada() {
         setarId();
         Sala novaSala = new Sala(new CriarDadosSala("Nova Sala", 50, "Rua Teste", "Nova Sala de teste"));
         ReflectionTestUtils.setField(novaSala, "id", 2L);
 
-        DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(null, 2L, null, null, null);
+        DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(null, 2L,
+                reserva.getInicioReserva(),  reserva.getFimReserva(), null);
 
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
         when(salaService.findById(2L)).thenReturn(novaSala);

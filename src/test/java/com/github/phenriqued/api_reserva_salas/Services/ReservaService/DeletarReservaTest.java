@@ -30,7 +30,7 @@ class DeletarReservaTest {
     @InjectMocks
     private ReservaService reservaService;
 
-    private Usuario usuarioTest = new Usuario(new CriarDadosUsuario("Teste", "teste@email.com", "123456"));
+    private Usuario usuarioTest = new Usuario("Teste", "teste@email.com", "123456");
     private Sala salaTest = new Sala(new CriarDadosSala("Sala", 10, "Rua Teste", "Sala de teste"));
     CriarDadosReserva dadosReserva = new CriarDadosReserva(1L, 1L, LocalDateTime.now().plusMinutes(10), LocalDateTime.now().plusHours(2));
     Reserva reserva = new Reserva(usuarioTest, salaTest, dadosReserva);

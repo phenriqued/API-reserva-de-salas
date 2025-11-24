@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-
 @AllArgsConstructor
 public class UsuarioService {
 

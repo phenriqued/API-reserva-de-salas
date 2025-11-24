@@ -1,7 +1,6 @@
 package com.github.phenriqued.api_reserva_salas.Controllers.UsuarioController;
 
 import com.github.phenriqued.api_reserva_salas.DTOs.UsuarioDTO.AtualizarDadosUsuario;
-import com.github.phenriqued.api_reserva_salas.DTOs.UsuarioDTO.CriarDadosUsuario;
 import com.github.phenriqued.api_reserva_salas.DTOs.UsuarioDTO.DadosUsuario;
 import com.github.phenriqued.api_reserva_salas.Services.UsuarioService.UsuarioService;
 import jakarta.validation.Valid;
@@ -10,9 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
