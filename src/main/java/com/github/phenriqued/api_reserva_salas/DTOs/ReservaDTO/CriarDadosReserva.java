@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 public record CriarDadosReserva(
-        @NotNull
         Long usuarioId,
         @NotNull
         Long salaId,

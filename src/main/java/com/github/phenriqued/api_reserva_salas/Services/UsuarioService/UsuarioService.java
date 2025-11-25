@@ -33,6 +33,10 @@ public class UsuarioService {
         return usuarioRepository.findById(id).map(DadosUsuario::new).orElseThrow(EntityNotFoundException::new);
     }
     @Transactional(readOnly = true)
+    public Usuario findByEmail(String email) {
+        return usuarioRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+    }
+    @Transactional(readOnly = true)
     public Usuario findById(Long id) {
         return usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado, verifique o ID!"));
     }
