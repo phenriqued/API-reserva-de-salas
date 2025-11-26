@@ -36,6 +36,7 @@ public class ReservaService {
     public DadosReserva criarReserva(JwtAuthenticationToken token, CriarDadosReserva dadosReserva) {
         var usuario = findUsuarioByEmail(token.getName());
         var sala = salaService.findById(dadosReserva.salaId());
+        validarPeriodoFuturo(dadosReserva.inicioReserva(), dadosReserva.fimReserva());
         validarPeriodoReserva(sala, dadosReserva.inicioReserva(), dadosReserva.fimReserva());
         var reserva = reservaRepository.save(new Reserva(usuario, sala, dadosReserva));
         return new DadosReserva(reserva);
@@ -127,6 +128,12 @@ public class ReservaService {
         if (!Objects.equals(reserva.getUsuario().getId(), usuario.getId()))
             throw new BusinessRuleException("Não é possível cancelar uma reserva que não pertence a "+usuario.getNome());
     }
+    private void validarPeriodoFuturo(LocalDateTime inicio, LocalDateTime fim) {
+        if (inicio.isBefore(LocalDateTime.now()) || fim.isBefore(LocalDateTime.now())) {
+            throw new BusinessRuleException("O periodo não pode anteceder a data atual");
+        }
+    }
+
     private Reserva findById(Long id){
         return reservaRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Reserva não encontrada"));
     }

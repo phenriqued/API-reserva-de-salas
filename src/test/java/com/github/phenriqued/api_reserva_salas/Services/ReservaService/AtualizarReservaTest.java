@@ -17,7 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -54,18 +56,20 @@ class AtualizarReservaTest {
     @DisplayName("Deveria atualizar o Periodo de uma reserva quando a mesma existe e dados de atualização estão corretos e não a reserva conflitante com periodo")
     void atualizarPeriodoReserva() {
         setarId();
-
+        JwtAuthenticationToken token = Mockito.mock(JwtAuthenticationToken.class);
         LocalDateTime novoPeriodoInicio = LocalDateTime.now().plusHours(1);
         LocalDateTime novoPeriodoFim = LocalDateTime.now().plusHours(2);
 
         DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(null, 1L,
                 novoPeriodoInicio, novoPeriodoFim, null);
 
+        when(token.getName()).thenReturn("Teste@email.com");
+        when(usuarioService.findByEmail("Teste@email.com")).thenReturn(usuarioTest);
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
         when(salaService.findById(1L)).thenReturn(salaTest);
         when(reservaRepository.existsReservaConflitante(1L, dadosAtualizar.inicioReserva(), dadosAtualizar.fimReserva())).thenReturn(false);
 
-        reservaService.atualizarReserva(1L, dadosAtualizar);
+        reservaService.atualizarReserva(1L, dadosAtualizar, token);
 
         verify(reservaRepository, times(1)).findById(1L);
         assertEquals(novoPeriodoInicio, reserva.getInicioReserva());
@@ -75,18 +79,20 @@ class AtualizarReservaTest {
     @DisplayName("Deveria atualizar a Sala de uma reserva quando a mesma existe e sala não estivar ocupada")
     void atualizarSalaReserva() {
         setarId();
-
+        JwtAuthenticationToken token = Mockito.mock(JwtAuthenticationToken.class);
         Sala novaSala = new Sala(new CriarDadosSala("Nova Sala", 50, "Rua Teste", "Nova Sala de teste"));
         ReflectionTestUtils.setField(novaSala, "id", 2L);
 
         DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(null, 2L,
                 reserva.getInicioReserva(), reserva.getFimReserva(), null);
 
+        when(token.getName()).thenReturn("Teste@email.com");
+        when(usuarioService.findByEmail("Teste@email.com")).thenReturn(usuarioTest);
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
         when(salaService.findById(2L)).thenReturn(novaSala);
         when(reservaRepository.existsReservaConflitante(2L, reserva.getInicioReserva(), reserva.getFimReserva())).thenReturn(false);
 
-        reservaService.atualizarReserva(1L, dadosAtualizar);
+        reservaService.atualizarReserva(1L, dadosAtualizar, token);
 
         verify(reservaRepository, times(1)).findById(1L);
         assertEquals(novaSala.getName(), reserva.getSala().getName());
@@ -96,16 +102,18 @@ class AtualizarReservaTest {
     @DisplayName("Deveria atualizar o usuário de uma reserva quando a mesma existe")
     void atualizarUsuarioReserva() {
         setarId();
-
+        JwtAuthenticationToken token = Mockito.mock(JwtAuthenticationToken.class);
         Usuario novoUsuario = new Usuario("New User Test", "test@email.com", "123456");
         ReflectionTestUtils.setField(novoUsuario, "id", 2L);
 
         DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(2L, null, null, null, null);
 
+        when(token.getName()).thenReturn("Teste@email.com");
+        when(usuarioService.findByEmail("Teste@email.com")).thenReturn(usuarioTest);
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
         when(usuarioService.findById(2L)).thenReturn(novoUsuario);
 
-        reservaService.atualizarReserva(1L, dadosAtualizar);
+        reservaService.atualizarReserva(1L, dadosAtualizar, token);
 
         verify(reservaRepository, times(1)).findById(1L);
         assertEquals(novoUsuario.getNome(), reserva.getUsuario().getNome());
@@ -115,28 +123,33 @@ class AtualizarReservaTest {
     @DisplayName("Nao deveria atualizar a reserva quando a mesma não existe")
     void naoDeveriaAtualizarReservaQuandoNaoExiste() {
         setarId();
+        JwtAuthenticationToken token = Mockito.mock(JwtAuthenticationToken.class);
         DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(null, null,
                 LocalDateTime.now().plusHours(5), LocalDateTime.now().plusHours(10), null);
 
         when(reservaRepository.findById(1L)).thenThrow(new EntityNotFoundException("Reserva não encontrada"));
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> reservaService.atualizarReserva(1L, dadosAtualizar));
+
+        Exception exception = assertThrows(EntityNotFoundException.class, () -> reservaService.atualizarReserva(1L, dadosAtualizar, token));
         assertEquals("Reserva não encontrada", exception.getMessage());
     }
     @Test
     @DisplayName("Não deveria atualizar a Sala de uma reserva quando a mesma existe e sala já ocupada")
     void naoDeveriaAtualizarSalaReservaQuandoSalaEstaOcupada() {
         setarId();
+        JwtAuthenticationToken token = Mockito.mock(JwtAuthenticationToken.class);
         Sala novaSala = new Sala(new CriarDadosSala("Nova Sala", 50, "Rua Teste", "Nova Sala de teste"));
         ReflectionTestUtils.setField(novaSala, "id", 2L);
 
         DadosAtualizarReserva dadosAtualizar = new DadosAtualizarReserva(null, 2L,
                 reserva.getInicioReserva(),  reserva.getFimReserva(), null);
 
+        when(token.getName()).thenReturn("Teste@email.com");
+        when(usuarioService.findByEmail("Teste@email.com")).thenReturn(usuarioTest);
         when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
         when(salaService.findById(2L)).thenReturn(novaSala);
         when(reservaRepository.existsReservaConflitante(2L, reserva.getInicioReserva(), reserva.getFimReserva())).thenReturn(true);
 
-        Exception exception = assertThrows(BusinessRuleException.class, () -> reservaService.atualizarReserva(1L, dadosAtualizar));
+        Exception exception = assertThrows(BusinessRuleException.class, () -> reservaService.atualizarReserva(1L, dadosAtualizar, token));
         assertEquals("Já existe uma reserva entre o periodo marcado!", exception.getMessage());
     }
 
