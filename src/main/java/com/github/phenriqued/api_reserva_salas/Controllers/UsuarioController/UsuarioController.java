@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,15 +31,16 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.listarUsuarioPeloId(id));
     }
 
-    @PatchMapping("{id}")
-    public ResponseEntity<Void> atualizarUsuario(@PathVariable("id") Long id, @RequestBody @Valid AtualizarDadosUsuario atualizarDadosUsuario){
-        usuarioService.atualizarUsuario(id, atualizarDadosUsuario);
+    @PatchMapping("/atualizar")
+    public ResponseEntity<Void> atualizarUsuario(@RequestBody @Valid AtualizarDadosUsuario atualizarDadosUsuario,
+                                                 JwtAuthenticationToken token){
+        usuarioService.atualizarUsuario(atualizarDadosUsuario, token);
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<DadosUsuario> deletarUsuarioPeloID(@PathVariable("id") Long id){
-        usuarioService.deletarUsuario(id);
+    @DeleteMapping("/deletar")
+    public ResponseEntity<DadosUsuario> deletarUsuarioPeloID(JwtAuthenticationToken token){
+        usuarioService.deletarUsuario(token);
         return ResponseEntity.noContent().build();
     }
 

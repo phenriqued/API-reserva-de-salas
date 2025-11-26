@@ -12,12 +12,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,15 +50,16 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("deveria atualizar um usuário quando os dados estão corretos")
     void atualizarUsuario() {
-        CriarDadosUsuario dadosUsuario = new CriarDadosUsuario("UserTest", "teste@email.com", "123456");
-        Usuario usuario = new Usuario("Teste", "Teste@email.com", "Teste123");
+        JwtAuthenticationToken token = Mockito.mock(JwtAuthenticationToken.class);
+        Usuario usuario = new Usuario("Teste", "teste@email.com", "Teste123");
         ReflectionTestUtils.setField(usuario, "id", 1L);
 
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(token.getName()).thenReturn("teste@email.com");
+        when(usuarioRepository.findByEmail("teste@email.com")).thenReturn(Optional.of(usuario));
         AtualizarDadosUsuario atualizarDados = new AtualizarDadosUsuario("new Name Test", null, null);
 
-        usuarioService.atualizarUsuario(1L, atualizarDados);
-        verify(usuarioRepository, times(1)).findById(1L);
+        usuarioService.atualizarUsuario(atualizarDados, token);
+        verify(usuarioRepository, times(1)).findByEmail("teste@email.com");
         assertEquals("new Name Test", usuario.getNome());
     }
     @Test
@@ -71,11 +75,14 @@ class UsuarioServiceTest {
     @Test
     @DisplayName("Deveria deletar uma usuario quando a mesmo existe e está correto")
     void deletarUsuario() {
-        CriarDadosUsuario dadosUsuario = new CriarDadosUsuario("UserTest", "teste@email.com", "123456");
-        Usuario usuario = new Usuario("Teste", "Teste@email.com", "Teste123");
+        JwtAuthenticationToken token = Mockito.mock(JwtAuthenticationToken.class);
+        Usuario usuario = new Usuario("Teste", "teste@email.com", "Teste123");
         ReflectionTestUtils.setField(usuario, "id", 1L);
 
-        usuarioService.deletarUsuario(1L);
+        when(token.getName()).thenReturn("teste@email.com");
+        when(usuarioRepository.findByEmail("teste@email.com")).thenReturn(Optional.of(usuario));
+
+        usuarioService.deletarUsuario(token);
 
         verify(usuarioRepository, times(1)).deleteById(1L);
     }

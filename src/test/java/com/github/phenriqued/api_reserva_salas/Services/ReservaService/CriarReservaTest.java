@@ -128,8 +128,6 @@ class CriarReservaTest {
         when(token.getName()).thenReturn("teste@email.com");
         when(usuarioService.findByEmail("teste@email.com")).thenReturn(usuarioTest);
         when(salaService.findById(1L)).thenReturn(salaTest);
-        when(reservaRepository.existsReservaConflitante(1L, dadosReserva.inicioReserva(), dadosReserva.fimReserva())).thenReturn(false);
-
 
         Exception exception = assertThrows(BusinessRuleException.class, () -> reservaService.criarReserva(token, dadosReserva));
         assertEquals("O periodo não pode anteceder a data atual", exception.getMessage());
@@ -138,23 +136,14 @@ class CriarReservaTest {
         verify(reservaRepository,never()).save(reserva);
     }
     @Test
-    @DisplayName("Não deveria criar uma reserva quando o periodo de encerramento antecede o periodo de inicio")
-    void naoDeveriaCriarReservaQuandoPeriodoEncerramentoAntecedeInicio() {
-        setarId();
-        JwtAuthenticationToken token = Mockito.mock(JwtAuthenticationToken.class);
-        CriarDadosReserva dadosReserva = new CriarDadosReserva(null, 1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusMinutes(10));
-        Reserva reserva = new Reserva(usuarioTest, salaTest, dadosReserva);
+    @DisplayName("Não deveria permitir data final antes da inicial no DTO")
+    void naoDeveriaCriarDTOQuandoFimAntecedeInicio() {
 
-        when(token.getName()).thenReturn("teste@email.com");
-        when(usuarioService.findByEmail("teste@email.com")).thenReturn(usuarioTest);
-        when(salaService.findById(1L)).thenReturn(salaTest);
-        when(reservaRepository.existsReservaConflitante(1L, dadosReserva.inicioReserva(), dadosReserva.fimReserva())).thenReturn(false);
+        LocalDateTime inicio = LocalDateTime.now().plusHours(1);
+        LocalDateTime fim = LocalDateTime.now().plusMinutes(10);
 
-        Exception exception = assertThrows(BusinessRuleException.class, () -> reservaService.criarReserva(token, dadosReserva));
+        Exception exception = assertThrows(BusinessRuleException.class, () -> new CriarDadosReserva(1L, 1L, inicio, fim));
         assertEquals("O periodo inicial deve anteceder o fim", exception.getMessage());
-        verify(usuarioService, times(1)).findById(1L);
-        verify(salaService, times(1)).findById(1L);
-        verify(reservaRepository,never()).save(reserva);
     }
 
 }

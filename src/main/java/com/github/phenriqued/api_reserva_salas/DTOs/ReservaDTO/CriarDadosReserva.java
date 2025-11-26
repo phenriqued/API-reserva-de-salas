@@ -5,21 +5,24 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public record CriarDadosReserva(
         Long usuarioId,
         @NotNull
         Long salaId,
-        @NotNull
+        @NotNull(message = "A data/hora não pode ser nula")
         @Future(message = "A data/hora da reserva deve ser no futuro")
         LocalDateTime inicioReserva,
-        @NotNull
+        @NotNull(message = "A data/hora não pode ser nula")
         @Future(message = "A data/hora da reserva deve ser no futuro")
         LocalDateTime fimReserva) {
     public CriarDadosReserva{
-        if(fimReserva.isBefore(inicioReserva)){
+        if(Objects.isNull(fimReserva) || Objects.isNull(inicioReserva))
+            throw new BusinessRuleException("Ambas datas devem ser preenchidas");
+
+        if(fimReserva.isBefore(inicioReserva))
             throw new BusinessRuleException("O periodo inicial deve anteceder o fim");
-        }
     }
 
 

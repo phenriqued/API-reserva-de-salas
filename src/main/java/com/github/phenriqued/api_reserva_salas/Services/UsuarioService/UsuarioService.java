@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,24 +35,25 @@ public class UsuarioService {
     }
     @Transactional(readOnly = true)
     public Usuario findByEmail(String email) {
-        return usuarioRepository.findByEmail(email).orElseThrow(EntityNotFoundException::new);
+        return usuarioRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado, verifique o Email!"));
     }
     @Transactional(readOnly = true)
     public Usuario findById(Long id) {
         return usuarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado, verifique o ID!"));
     }
     @Transactional(rollbackFor = Exception.class)
-    public void atualizarUsuario(Long id, AtualizarDadosUsuario atualizarDados) {
+    public void atualizarUsuario(AtualizarDadosUsuario atualizarDados, JwtAuthenticationToken token) {
         if (Objects.isNull(atualizarDados)){
             return;
         }
-        var usuario = usuarioRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        var usuario = findByEmail(token.getName());
         usuario.atualizarDados(atualizarDados);
         usuarioRepository.save(usuario);
     }
     @Transactional(rollbackFor = Exception.class)
-    public void deletarUsuario(Long id){
-        usuarioRepository.deleteById(id);
+    public void deletarUsuario(JwtAuthenticationToken token){
+        var usuario = findByEmail(token.getName());
+        usuarioRepository.deleteById(usuario.getId());
     }
 
 }
